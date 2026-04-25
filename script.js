@@ -149,32 +149,6 @@ function digitarDevagar(texto, elemento, velocidade = 20) {
     });
 }
 
-function falarTexto(texto) {
-    const synth = window.speechSynthesis;
-
-    // para qualquer fala anterior
-    synth.cancel();
-
-    const fala = new SpeechSynthesisUtterance(texto);
-
-    fala.lang = "pt-BR";
-    fala.rate = 1;     // velocidade (0.5 a 2)
-    fala.pitch = 1;    // tom (0 a 2)
-    fala.volume = 1;   // volume (0 a 1)
-
-    // escolher voz em português (se existir)
-    const vozes = synth.getVoices();
-    const vozPT = vozes.find(v => v.lang === "pt-BR");
-
-    if (vozPT) fala.voice = vozPT;
-
-    synth.speak(fala);
-    window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-    };
-
-}
-falarTexto(textoFinal);
 
 /* ADICIONAR MSG */
 function adicionarMensagem(texto, tipo) {
@@ -187,101 +161,81 @@ function adicionarMensagem(texto, tipo) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-/* 🎤 MICROFONE */
-// 🎤 RECONHECIMENTO DE VOZ (CHROME)
+const body = document.body;
+const icon = themeToggle.querySelector("i");
+
+// carregar tema salvo
+window.addEventListener("load", () => {
+    const temaSalvo = localStorage.getItem("tema");
+
+    if (temaSalvo) {
+        body.className = temaSalvo;
+        atualizarIcone();
+    }
+});
+
+themeToggle.onclick = () => {
+    if (body.classList.contains("dark")) {
+        body.classList.remove("dark");
+        body.classList.add("light");
+        localStorage.setItem("tema", "light");
+    } else {
+        body.classList.remove("light");
+        body.classList.add("dark");
+        localStorage.setItem("tema", "dark");
+    }
+
+    atualizarIcone();
+};
+
+function atualizarIcone() {
+    if (body.classList.contains("dark")) {
+        icon.className = "fa-solid fa-moon";
+    } else {
+        icon.className = "fa-solid fa-sun";
+    }
+}
+
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-if (SpeechRecognition) {
+if (SpeechRecognition && micBtn) {
     const recognition = new SpeechRecognition();
 
     recognition.lang = "pt-BR";
     recognition.continuous = false;
-    recognition.interimResults = true;
+    recognition.interimResults = false;
 
     let gravando = false;
 
-    micBtn.onclick = () => {
-        if (!gravando) {
-            recognition.start();
-        } else {
-            recognition.stop();
-        }
-    };
+    micBtn.addEventListener("click", () => {
+        gravando ? recognition.stop() : recognition.start();
+    });
 
     recognition.onstart = () => {
         gravando = true;
         micBtn.classList.add("gravando");
-        document.getElementById("transcricao").innerText = "Ouvindo...";
+        if (transcricao) transcricao.innerText = "Ouvindo...";
     };
 
     recognition.onresult = (event) => {
-        let texto = "";
+        const texto = event.results[0][0].transcript;
 
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            texto += event.results[i][0].transcript;
-        }
+        if (transcricao) transcricao.innerText = texto;
+        if (input) input.value = texto;
+        if (sendBtn) sendBtn.disabled = false;
 
-        document.getElementById("transcricao").innerText = texto;
-
-        // joga direto no input
-        input.value = texto;
-        sendBtn.disabled = false;
+        if (typeof enviar === "function") enviar();
     };
 
     recognition.onend = () => {
         gravando = false;
         micBtn.classList.remove("gravando");
-        document.getElementById("transcricao").innerText = "Clique e fale...";
+        if (transcricao) transcricao.innerText = "Clique e fale...";
     };
 
-    recognition.onerror = (event) => {
-        console.error("Erro no microfone:", event.error);
+    recognition.onerror = () => {
         gravando = false;
         micBtn.classList.remove("gravando");
-        document.getElementById("transcricao").innerText = "Erro ao usar microfone";
-    };
-
-} else {
-    // Caso o navegador não suporte
-    micBtn.onclick = () => {
-        alert("Seu navegador não suporta reconhecimento de voz 😢\nUse o Google Chrome.");
+        if (transcricao) transcricao.innerText = "Erro no microfone";
     };
 }
-
-/* 🌙 TEMA */
-document.addEventListener("DOMContentLoaded", () => {
-    const body = document.body;
-    const btn = document.getElementById("themeToggle");
-    const icon = btn.querySelector("i");
-
-    // carregar tema salvo
-    const temaSalvo = localStorage.getItem("tema");
-
-    if (temaSalvo) {
-        body.className = temaSalvo;
-    }
-
-    atualizarIcone();
-
-    btn.addEventListener("click", () => {
-        if (body.classList.contains("dark")) {
-            body.classList.remove("dark");
-            body.classList.add("light");
-            localStorage.setItem("tema", "light");
-        } else {
-            body.classList.remove("light");
-            body.classList.add("dark");
-            localStorage.setItem("tema", "dark");
-        }
-
-        atualizarIcone();
-    });
-
-    function atualizarIcone() {
-        if (body.classList.contains("dark")) {
-            icon.className = "fa-solid fa-moon";
-        } else {
-            icon.className = "fa-solid fa-sun";
-        }
-    }
-});
