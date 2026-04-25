@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Chat SENAI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<!-- 🔥 ÍCONES MELHORES -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dark">
+
+<button id="themeToggle">
+    <i class="fa-solid fa-moon"></i>
+</button>
+
+<header class="header">
+    <h1 class="titulo">Chat SENAI</h1>
+
+    <button id="themeToggle">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+</header>
+
+<div class="main">
+
+    <!-- 🎤 VOZ -->
+   <div class="voz">
+    <h2>Assistente por Voz</h2>
+
+    <div class="voz-center">
+        <div id="micBtn" class="mic-custom">
+            <i class="fa-solid fa-microphone"></i>
+        </div>
+
+        <p id="transcricao">Clique e fale...</p>
+    </div>
+</div>
+
+    <!-- 💬 CHAT -->
+    <div class="chat-area">
+        <h2>Chat</h2>
+
+        <div id="chat"></div>
+
+        <div class="input-area">
+            <input id="input" placeholder="Digite sua pergunta..." />
+
+            <button id="sendBtn" disabled>
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 📊 SUGESTÕES -->
+    <div class="painel">
+        <h2>Sugestões Inteligentes</h2>
+
+        <div class="cards">
+
+            <button class="card" data-msg="Quais cursos o SENAI oferece?">
+                <i class="fa-solid fa-book"></i>
+                <span>Ver cursos disponíveis</span>
+            </button>
+
+            <button class="card" data-msg="Como faço para me inscrever no SENAI?">
+                <i class="fa-solid fa-pen"></i>
+                <span>Como se inscrever</span>
+            </button>
+
+            <button class="card" data-msg="O SENAI oferece cursos gratuitos?">
+                <i class="fa-solid fa-dollar-sign"></i>
+                <span>Cursos gratuitos</span>
+            </button>
+
+            <button class="card" data-msg="Quais unidades do SENAI existem?">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Unidades SENAI</span>
+            </button>
+
+            <button class="card" data-msg="Quais áreas de atuação existem no SENAI?">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>Áreas de atuação</span>
+            </button>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
